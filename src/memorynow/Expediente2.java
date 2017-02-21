@@ -29,13 +29,14 @@ import javax.swing.JTextField;
 public class Expediente2 extends JFrame implements ActionListener {
 
     JFrame _ventana;
-    JButton _Regresar, _btnEnviar;
+    JButton _Regresar, _btnEnviar, _elegir;
     Container _cont;
-    JLabel _palabras, Fondo, Nu, Foto;
+    JLabel _palabras, Fondo, Nu, Foto, Nu2, Nu3, Nu4, Nu5, Nu6, Nu7;
     JTextArea _txtChat, Info;
     JTextField _txtMsj;
     JRadioButton[] NuR;
     private ButtonGroup grupo;
+     int _cuantos = 0;
 
     public Expediente2() {
         _ventana = new JFrame("MEMORY NOW");
@@ -64,7 +65,47 @@ public class Expediente2 extends JFrame implements ActionListener {
         _Regresar.setText("Regresar");
         _Regresar.addActionListener(this);
         Fondo.add(_Regresar);
+        
+        _elegir = new JButton();
+        _elegir.setBounds(800, 650, 100, 20);
+        _elegir.setText("Ver");
+        _elegir.addActionListener(this);
+        Fondo.add(_elegir);
 
+        Nu = new JLabel();
+        Nu.setFont(new java.awt.Font("Century Gothic", 0, 15));
+        Nu.setBounds(600, 25, 200, 40);
+        Fondo.add(Nu);
+
+        Nu2 = new JLabel();
+        Nu2.setFont(new java.awt.Font("Century Gothic", 0, 15));
+        Nu2.setBounds(600, 75, 200, 40);
+        Fondo.add(Nu2);
+
+        Nu3 = new JLabel();
+        Nu3.setFont(new java.awt.Font("Century Gothic", 0, 15));
+        Nu3.setBounds(600, 105, 200, 40);
+        Fondo.add(Nu3);
+
+        Nu4 = new JLabel();
+        Nu4.setFont(new java.awt.Font("Century Gothic", 0, 15));
+        Nu4.setBounds(600, 125, 200, 40);
+        Fondo.add(Nu4);
+
+        Nu5 = new JLabel();
+        Nu5.setFont(new java.awt.Font("Century Gothic", 0, 15));
+        Nu5.setBounds(600, 155, 200, 40);
+        Fondo.add(Nu5);
+
+        Nu6 = new JLabel();
+        Nu6.setFont(new java.awt.Font("Century Gothic", 0, 15));
+        Nu6.setBounds(600, 185, 200, 40);
+        Fondo.add(Nu6);
+
+        Nu7 = new JLabel();
+        Nu7.setFont(new java.awt.Font("Century Gothic", 0, 15));
+        Nu7.setBounds(600, 225, 200, 40);
+        Fondo.add(Nu7);
         //----------------------------------INFORMACIÓN DEL ALUMNO-----------------------------------//
         Connection con = null;
         PreparedStatement pstatement = null;
@@ -75,7 +116,7 @@ public class Expediente2 extends JFrame implements ActionListener {
 
         ResultSet Nombres = null;
         Statement sS = null;
-        int _cuantos = 0;
+       
 
         Statement stament = null;
         ResultSet rs = null;
@@ -111,6 +152,7 @@ public class Expediente2 extends JFrame implements ActionListener {
                         Nu[i].setText(rs.getObject("nombre").toString() + " " + rs.getObject("apellido").toString());
                         Nu[i].setFont(new java.awt.Font("Century Gothic", 0, 15));
                         Nu[i].setBounds(100, (150 + (i * 30)), 200, 40);
+                        
 
                         Fondo.add(Nu[i]);
                         rs.next();
@@ -139,68 +181,11 @@ public class Expediente2 extends JFrame implements ActionListener {
                         stament = conexion.createStatement();
                         rs = stament.executeQuery(query2);
                         if (rs.next()) {
-
-                            JLabel[] Nu = new JLabel[_cuantos];
-                            JLabel[] Nu2 = new JLabel[_cuantos];
-                            JLabel[] Nu3 = new JLabel[_cuantos];
-                            JLabel[] Nu4 = new JLabel[_cuantos];
-                            JLabel[] Nu5 = new JLabel[_cuantos];
-                            JLabel[] Nu6 = new JLabel[_cuantos];
-                            JLabel[] Nu7 = new JLabel[_cuantos];
-                            for (int i = 0; i < _cuantos; i++) {
-                                Nu[i] = new JLabel();
-                                Nu2[i] = new JLabel();
-                                Nu3[i] = new JLabel();
-                                Nu4[i] = new JLabel();
-                                Nu5[i] = new JLabel();
-                                Nu6[i] = new JLabel();
-                                Nu7[i] = new JLabel();
-                                JLabel info = Nu[i];
-         //System.out.println(rs.getObject("nombre"));
-                                //pendiente= rs.getObject("nombre").toString()+" "+ rs.getObject("apellido").toString();
-                                Nu[i].setText(rs.getObject("nombre").toString());
-                                Nu[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-                                Nu[i].setBounds(100, (180 + (i * 30)), 500, 40);
-
-                                Nu2[i].setText(rs.getObject("apellido").toString());
-                                Nu2[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-                                Nu2[i].setBounds(250, (180 + (i * 30)), 500, 40);
-
-                                Nu3[i].setText(rs.getObject("edad").toString());
-                                Nu3[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-                                Nu3[i].setBounds(450, (180 + (i * 30)), 500, 40);
-
-                                Nu4[i].setText(rs.getObject("nacimiento").toString());
-                                Nu4[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-                                Nu4[i].setBounds(600, (180 + (i * 30)), 500, 40);
-
-                                Nu5[i].setText(rs.getObject("padre_de_familia").toString());
-                                Nu5[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-                                Nu5[i].setBounds(800, (180 + (i * 30)), 500, 40);
-
-                                Nu6[i].setText(rs.getObject("sexo").toString());
-                                Nu6[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-                                Nu6[i].setBounds(1000, (180 + (i * 30)), 500, 40);
-
-                                Nu7[i].setText(rs.getObject("nombreG").toString());
-                                Nu7[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-                                Nu7[i].setBounds(1200, (180 + (i * 30)), 500, 40);
-
-                               
-                                Fondo.add(Nu[i]);
-                                Fondo.add(Nu2[i]);
-                                Fondo.add(Nu3[i]);
-                                Fondo.add(Nu4[i]);
-                                Fondo.add(Nu5[i]);
-                                Fondo.add(Nu6[i]);
-                                Fondo.add(Nu7[i]);
-                                rs.next();
-
-                            }
+                            Nu2.setText(rs.getString("nombre"));
                         }
                     } else {
                         _palabras.setText("No se encontraron registros");
-                        return;
+                        
                     }
 
                 }
@@ -250,7 +235,14 @@ public class Expediente2 extends JFrame implements ActionListener {
             _txtMsj.setText("");
             _txtMsj.setCaretColor(Color.BLACK);
             _txtChat.setText(_txtChat.getText() + "\n" + msj);
+        }else if(e.getSource() == _elegir){
+            for (int j = 0; j < _cuantos; j++) {
+                if (NuR[j].isSelected()) {
+                    
+                }
+            }
         }
+            
 
     }
 
@@ -310,11 +302,7 @@ public class Expediente2 extends JFrame implements ActionListener {
  }
 
  );*/
-
-
-
-
-/*Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
+ /*Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
             String query = "SELECT count(nombre) FROM alumno;";
             s = conexion.createStatement();
             Cuantos = s.executeQuery(query);
