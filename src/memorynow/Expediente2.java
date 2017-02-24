@@ -36,7 +36,12 @@ public class Expediente2 extends JFrame implements ActionListener {
     JTextField _txtMsj;
     JRadioButton[] NuR;
     private ButtonGroup grupo;
-     int _cuantos = 0;
+    int _cuantos = 0;
+    ResultSet rs = null;
+    cDatos sql = new cDatos();
+    ResultSet Nombres = null;
+    ResultSet Cuantos = null;
+    Statement s = null;
 
     public Expediente2() {
         _ventana = new JFrame("MEMORY NOW");
@@ -65,7 +70,7 @@ public class Expediente2 extends JFrame implements ActionListener {
         _Regresar.setText("Regresar");
         _Regresar.addActionListener(this);
         Fondo.add(_Regresar);
-        
+
         _elegir = new JButton();
         _elegir.setBounds(800, 650, 100, 20);
         _elegir.setText("Ver");
@@ -74,54 +79,41 @@ public class Expediente2 extends JFrame implements ActionListener {
 
         Nu = new JLabel();
         Nu.setFont(new java.awt.Font("Century Gothic", 0, 15));
-        Nu.setBounds(600, 25, 200, 40);
+        Nu.setBounds(1000, 350, 200, 40);
         Fondo.add(Nu);
 
         Nu2 = new JLabel();
         Nu2.setFont(new java.awt.Font("Century Gothic", 0, 15));
-        Nu2.setBounds(600, 75, 200, 40);
+        Nu2.setBounds(1000, 370, 200, 40);
         Fondo.add(Nu2);
 
         Nu3 = new JLabel();
         Nu3.setFont(new java.awt.Font("Century Gothic", 0, 15));
-        Nu3.setBounds(600, 105, 200, 40);
+        Nu3.setBounds(1000, 390, 200, 40);
         Fondo.add(Nu3);
 
         Nu4 = new JLabel();
         Nu4.setFont(new java.awt.Font("Century Gothic", 0, 15));
-        Nu4.setBounds(600, 125, 200, 40);
+        Nu4.setBounds(1000, 410, 200, 40);
         Fondo.add(Nu4);
 
         Nu5 = new JLabel();
         Nu5.setFont(new java.awt.Font("Century Gothic", 0, 15));
-        Nu5.setBounds(600, 155, 200, 40);
+        Nu5.setBounds(1000, 430, 200, 40);
         Fondo.add(Nu5);
 
         Nu6 = new JLabel();
         Nu6.setFont(new java.awt.Font("Century Gothic", 0, 15));
-        Nu6.setBounds(600, 185, 200, 40);
+        Nu6.setBounds(1000, 450, 200, 40);
         Fondo.add(Nu6);
 
         Nu7 = new JLabel();
         Nu7.setFont(new java.awt.Font("Century Gothic", 0, 15));
-        Nu7.setBounds(600, 225, 200, 40);
+        Nu7.setBounds(1000, 470, 200, 40);
         Fondo.add(Nu7);
         //----------------------------------INFORMACIÓN DEL ALUMNO-----------------------------------//
-        Connection con = null;
-        PreparedStatement pstatement = null;
-        PreparedStatement psta = null;
 
-        ResultSet Cuantos = null;
-        Statement s = null;
-
-        ResultSet Nombres = null;
-        Statement sS = null;
-       
-
-        Statement stament = null;
-        ResultSet rs = null;
-        cDatos sql = new cDatos();
-
+//enlistar los radio botones con sus nombres
         try {
             Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
             String query = "SELECT count(nombre) FROM alumno;";
@@ -129,32 +121,32 @@ public class Expediente2 extends JFrame implements ActionListener {
             Cuantos = s.executeQuery(query);
             if (Cuantos.next()) {
                 _cuantos = Integer.parseInt((Cuantos.getObject("count(nombre)").toString()));
-                String query2 = "SELECT nombre, apellido FROM alumno;";
-                stament = conexion.createStatement();
+                String query2 = "SELECT alumno_id, nombre, apellido FROM alumno;";
+                Statement stament = conexion.createStatement();
                 rs = stament.executeQuery(query2);
                 if (rs.next()) {
 
-                    JLabel[] Nu = new JLabel[_cuantos];
-                    JRadioButton[] NuR = new JRadioButton[_cuantos];
+                    JLabel[] Nus = new JLabel[_cuantos];
+                    NuR = new JRadioButton[_cuantos];
                     grupo = new ButtonGroup();
                     for (int i = 0; i < _cuantos; i++) {
 
-                        JLabel info = Nu[i];
+                        JLabel info = Nus[i];
                         //System.out.println(rs.getObject("nombre"));
                         //pendiente= rs.getObject("nombre").toString()+" "+ rs.getObject("apellido").toString();
 
                         NuR[i] = new JRadioButton();
                         NuR[i].setBounds(80, (155 + (i * 30)), 16, 16);
+                        NuR[i].setActionCommand(rs.getObject("alumno_id").toString());
                         grupo.add(NuR[i]);
                         Fondo.add(NuR[i]);
 
-                        Nu[i] = new JLabel();
-                        Nu[i].setText(rs.getObject("nombre").toString() + " " + rs.getObject("apellido").toString());
-                        Nu[i].setFont(new java.awt.Font("Century Gothic", 0, 15));
-                        Nu[i].setBounds(100, (150 + (i * 30)), 200, 40);
-                        
+                        Nus[i] = new JLabel();
+                        Nus[i].setText(rs.getObject("nombre").toString() + " " + rs.getObject("apellido").toString());
+                        Nus[i].setFont(new java.awt.Font("Century Gothic", 0, 15));
+                        Nus[i].setBounds(100, (150 + (i * 30)), 200, 40);
 
-                        Fondo.add(Nu[i]);
+                        Fondo.add(Nus[i]);
                         rs.next();
 
                     }
@@ -167,11 +159,9 @@ public class Expediente2 extends JFrame implements ActionListener {
             ex.printStackTrace();
         }
 
-        try {
-
+        /*      try {
             Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
             for (int j = 0; j < _cuantos; j++) {
-                if (NuR[j].isSelected()) {
                     String query = "SELECT count(nombre) FROM alumno;";
                     s = conexion.createStatement();
                     Cuantos = s.executeQuery(query);
@@ -184,17 +174,16 @@ public class Expediente2 extends JFrame implements ActionListener {
                             Nu2.setText(rs.getString("nombre"));
                         }
                     } else {
-                        _palabras.setText("No se encontraron registros");
+                        _palabras.setText("No se encontraron alumnos registros");
                         
                     }
 
-                }
             }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-
+         */
         //----------------------------------INFORMACIÓN DEL ALUMNO-----------------------------------//
         //----------------------------------COMENTARIOS-----------------------------------//
         _txtChat = new JTextArea();
@@ -230,145 +219,74 @@ public class Expediente2 extends JFrame implements ActionListener {
             _ventana.setVisible(false);
 
         } else if (e.getSource() == _btnEnviar) {
+            
             String msj = "";
             msj = _txtMsj.getText();
+            String insertcom;
+            int alumno=0;
+            for (int j = 0; j < _cuantos; j++) {
+                    if (NuR[j].isSelected()) {
+                        alumno = Integer.parseInt(NuR[j].getActionCommand());
+                    }
+            }
+            try{
+                Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");                
+                Statement stament = conexion.createStatement();
+                insertcom = "insert INTO comentario(FechaC, alumco,comentario) values (NOW(), "+alumno+", '"+_txtMsj.getText()+"');";
+                stament.executeUpdate(insertcom);
+            } catch(SQLException ex){
+                 Logger.getLogger(Expediente2.class.getName()).log(Level.SEVERE, null, ex);
+            }
             _txtMsj.setText("");
             _txtMsj.setCaretColor(Color.BLACK);
             _txtChat.setText(_txtChat.getText() + "\n" + msj);
-        }else if(e.getSource() == _elegir){
-            for (int j = 0; j < _cuantos; j++) {
-                if (NuR[j].isSelected()) {
+            
+        } else if (e.getSource() == _elegir) {
+            
+            
+            String query2;
+            String query22;
+            ResultSet Come;
+            try {
+                Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");                
+                Statement stament = conexion.createStatement();
+                Statement stament2 = conexion.createStatement();
+
+                 for (int j = 0; j < _cuantos; j++) {
+                    if (NuR[j].isSelected()) {
+                        query2 = "SELECT alumno.nombre, alumno.apellido, alumno.edad, alumno.nacimiento, alumno.padre_de_familia, alumno.sexo, grupo.nombreG FROM alumno INNER JOIN grupo ON alumno.grupo_id = grupo.grupo_id where alumno_id='"+ NuR[j].getActionCommand() +"';";
+                        Nombres = stament.executeQuery(query2);
+                        if(Nombres.next()){
+                            Nu.setText("Nombre: "+Nombres.getNString("nombre"));
+                            Nu2.setText("Apellido: "+Nombres.getNString("apellido"));
+                            Nu3.setText("Edad: "+Nombres.getNString("edad"));
+                            Nu4.setText("Cumpleaños: "+Nombres.getObject("nacimiento"));
+                            Nu5.setText("Tutor: "+Nombres.getNString("padre_de_familia"));
+                            Nu6.setText("Sexo: "+Nombres.getNString("sexo"));
+                            Nu7.setText("Grupo: "+Nombres.getNString("nombreG"));
+                            _txtChat.setText("");
+                        }
+                        query22 = "SELECT * FROM comentario where alumco ='"+ NuR[j].getActionCommand() +"';";
+                        Come = stament.executeQuery(query22);
+                            if(Come.next()){
+                                while(Come.next()){
+                                    _txtChat.setText(_txtChat.getText()+"\n"+Come.getNString("comentario"));
+                                    Come.next();
+                                }
+                            }
+                            
+                    }
+                    
                     
                 }
+            } catch (SQLException ex) {
+                Logger.getLogger(Expediente2.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+            
+            
             
 
+        }
     }
 
 }
-
-/*info.addMouseListener(new MouseAdapter() {
-
- public void mouseClicked(MouseEvent e) {
-                                
- if (e.getSource() == info) {
- Connection conex = null;
- Statement sql = null;
- ResultSet resultado = null;
- ResultSet Cuan = null;
- Statement si = null;
- ResultSet rs;
- try {
- conex = (Connection) DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
- sql = conex.createStatement();
- resultado = sql.executeQuery("SELECT count(nombre) FROM alumno;");
- si = conexion.createStatement();
- Cuan = si.executeQuery(query);
-
- if (Cuan.next()) {
- int _cuantos1 = 0;
- _cuantos1 = Integer.parseInt((Cuan.getObject("count(nombre)").toString()));
- String query2 = "select nombre, apellido, edad FROM alumno;";
- sql = conexion.createStatement();
- rs = sql.executeQuery(query2);
-
- if (rs.next()) {
- JLabel[] Nu1 = new JLabel[_cuantos1];
-                                                    
- for (int i = 0; i < _cuantos1; i++) {
-                                                        
-                                                        
-                                                        
- Nu1[i] = new JLabel();
- Nu1[i].setText(rs.getObject("nombre").toString() + " " + rs.getObject("apellido").toString());
- Nu1[i].setFont(new java.awt.Font("Century Gothic", 0, 25));
- Nu1[i].setBounds(100, (150 + (i * 30)), 200, 40);
- Fondo.add(Nu1[i]);
- rs.next();
- }
-
- }
- //900 y 450
- }
-
- } catch (SQLException ex) {
- ex.printStackTrace();
- }
-
- }
-
- }
- }
-
- );*/
- /*Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
-            String query = "SELECT count(nombre) FROM alumno;";
-            s = conexion.createStatement();
-            Cuantos = s.executeQuery(query);
-            for (int j = 0; j < _cuantos; j++) {
-                if (NuR[j].isSelected()) {
-                    String query2 = "SELECT nombre, apellido, edad, nacimiento, padre_de_familia, sexo FROM alumno WHERE nombre = '" + NuR[j].getName() + "';";
-                    stament = conexion.createStatement();
-                    stament.executeUpdate(query2);
-
-                    JLabel[] Nu = new JLabel[_cuantos];
-                    JLabel[] Nu2 = new JLabel[_cuantos];
-                    JLabel[] Nu3 = new JLabel[_cuantos];
-                    JLabel[] Nu4 = new JLabel[_cuantos];
-                    JLabel[] Nu5 = new JLabel[_cuantos];
-                    JLabel[] Nu6 = new JLabel[_cuantos];
-                    JLabel[] Nu7 = new JLabel[_cuantos];
-
-                    for (int i = 0; i < _cuantos; i++) {
-
-                        Nu[i] = new JLabel();
-                        Nu2[i] = new JLabel();
-                        Nu3[i] = new JLabel();
-                        Nu4[i] = new JLabel();
-                        Nu5[i] = new JLabel();
-                        Nu6[i] = new JLabel();
-                        Nu7[i] = new JLabel();
-                        
-         Nu[i].setText(rs.getObject("nombre").toString());
-         Nu[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-         Nu[i].setBounds(10, (180 + (i * 30)), 500, 40);
-         
-         Nu2[i].setText(rs.getObject("apellido").toString());
-         Nu2[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-         Nu2[i].setBounds(250, (180 + (i * 30)), 500, 40);
-         
-         Nu3[i].setText(rs.getObject("edad").toString());
-         Nu3[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-         Nu3[i].setBounds(450, (180 + (i * 30)), 500, 40);
-         
-         Nu4[i].setText(rs.getObject("nacimiento").toString());
-         Nu4[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-         Nu4[i].setBounds(600, (180 + (i * 30)), 500, 40);
-         
-         Nu5[i].setText(rs.getObject("padre_de_familia").toString());
-         Nu5[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-         Nu5[i].setBounds(800, (180 + (i * 30)), 500, 40);
-         
-         Nu6[i].setText(rs.getObject("sexo").toString());
-         Nu6[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-         Nu6[i].setBounds(1000, (180 + (i * 30)), 500, 40);
-         
-         Nu7[i].setText(rs.getObject("nombreG").toString());
-         Nu7[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-         Nu7[i].setBounds(1200, (180 + (i * 30)), 500, 40);
-         
-         Fondo.add(Nu[i]);
-         Fondo.add(Nu2[i]);
-         Fondo.add(Nu3[i]);
-         Fondo.add(Nu4[i]);
-         Fondo.add(Nu5[i]);
-         Fondo.add(Nu6[i]);
-         Fondo.add(Nu7[i]);
-         rs.next();
-
-                    }
-
-                }
-
-            }*/
