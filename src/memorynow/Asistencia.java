@@ -29,10 +29,15 @@ public class Asistencia extends JFrame implements ActionListener {
     JTextArea Alumno;
     JTextField _txtMsj;
     JScrollPane scroll;
-    JComboBox[] combo;
+    JComboBox combo;
     JCheckBox[] Nuc;
     JLabel[] NuC;
     int _cuantos = 0;
+    ResultSet Cuantos = null;
+    Statement s = null;
+    Statement stament = null;
+    ResultSet rs;
+    String[] Grupo;
 
     public Asistencia() {
         _ventana = new JFrame("MEMORY NOW");
@@ -68,90 +73,35 @@ public class Asistencia extends JFrame implements ActionListener {
         _Aceptar.addActionListener(this);
         Fondo.add(_Aceptar);
 
-        
-
-        ResultSet Cuantos = null;
-        Statement s = null;
-        Statement stament = null;
-        ResultSet rs;
-
-        try {
-            Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
-            String query = "SELECT count(nombre) FROM alumno;";
-            s = conexion.createStatement();
-            Cuantos = s.executeQuery(query);
-            if (Cuantos.next()) {
-                System.out.println(Cuantos.getObject("count(nombre)"));
-                _cuantos = Integer.parseInt((Cuantos.getObject("count(nombre)").toString()));
-                String query2 = "select nombre, apellido, alumno_id FROM alumno;";
-                stament = conexion.createStatement();
-                rs = stament.executeQuery(query2);
-                if (rs.next()) {
-
-                    
-                    NuC = new JLabel[_cuantos];
-                    
-                    Nuc = new JCheckBox[_cuantos];
-                    for (int i = 0; i < _cuantos; i++) {
-
-                        Nuc[i] = new JCheckBox();
-                        Nuc[i].setBounds(120, (155 + (i * 40)), 17, 17);
-                        Fondo.add(Nuc[i]);
-
-                        NuC[i] = new JLabel();
-                        NuC[i].setText(rs.getObject("nombre").toString() + " " + rs.getObject("apellido").toString());
-                        System.out.println(Integer.toString(rs.getInt("alumno_id")));
-                        NuC[i].setName(Integer.toString(rs.getInt("alumno_id")));
-                        NuC[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
-                        NuC[i].setBounds(150, (150 + (i * 40)), 200, 40);
-                        Fondo.add(NuC[i]);
-                        rs.next();
-                         
-                    }
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, "No se encontraron registros");
-                return;
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        
-        
-        
+        //Combo para los grupos
         try {
             Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
             String query = "SELECT count(nombreG) FROM grupo;";
             s = conexion.createStatement();
             Cuantos = s.executeQuery(query);
             if (Cuantos.next()) {
-                System.out.println(Cuantos.getObject("count(nombreG)"));
                 _cuantos = Integer.parseInt((Cuantos.getObject("count(nombreG)").toString()));
-                String query2 = "SELECT nombreG FROM grupo;";
+                String query2 = "SELECT * FROM grupo;";
                 stament = conexion.createStatement();
                 rs = stament.executeQuery(query2);
-                if (rs.next()) {
-
-                    
-                    combo = new JComboBox[_cuantos];
+                while (rs.next()) {
+                     Grupo = new String[_cuantos];
                     for (int i = 0; i < _cuantos; i++) {
-
-                        combo[i] = new JComboBox();
-                        combo[i].setBounds(720, 155, 200, 20); 
-                        combo[i].addItem(rs.getObject("nombreG"));
-                        Fondo.add(combo[i]);
-
-                         
+                        Grupo[i] = rs.getString("nombreG");
+                        rs.next();
                     }
+                    combo = new JComboBox(Grupo);
+                    combo.setBounds(720, 155, 200, 20);
+                    combo.addActionListener(this);
+                    Fondo.add(combo);
                 }
-            } else {
-                JOptionPane.showMessageDialog(null, "No se encontraron registros");
-                return;
             }
+            
+            
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        
 
         _ventana.setVisible(true);
 
@@ -165,30 +115,88 @@ public class Asistencia extends JFrame implements ActionListener {
         } else if (e.getSource() == _Aceptar) {
 
             Statement stament = null;
-            
 
             try {
 
                 Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
-                for (int j = 0; j<_cuantos; j++) {
-                    if(Nuc[j].isSelected()){
-                        String query2 = "INSERT INTO alumnopru (asistencia, alumasis) VALUES (NOW(), '"+NuC[j].getName()+"');";
+                for (int j = 0; j < _cuantos; j++) {
+                    if (Nuc[j].isSelected()) {
+                        String query2 = "INSERT INTO alumnopru (asistencia, alumasis) VALUES (NOW(), '" + NuC[j].getName() + "');";
                         stament = conexion.createStatement();
-                        stament.executeUpdate(query2); 
-                                                
+                        stament.executeUpdate(query2);
                     }
-                    
-                }                
+
+                }
                 JOptionPane.showMessageDialog(null, "Registro de asistencia exitoso");
                 Profesor pro = new Profesor();
                 pro.verProfesor();
-                _ventana.setVisible(true);
+                _ventana.setVisible(false);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+        } else if (e.getSource() == combo) {
+
+            Statement stament = null;
+
+            try {
+
+                Connection conexion = DriverManager.getConnection("jdbc:mysql://localhost/memorynow", "root", "n0m3l0");
+                for (int j = 0; j < _cuantos; j++) {
+                    
+                    if (Nuc[j].isSelected()) {
+                        
+                        
+                        try {
+                            String query = "SELECT count(nombre) FROM alumno;";
+                            s = conexion.createStatement();
+                            Cuantos = s.executeQuery(query);
+                            if (Cuantos.next()) {
+                                System.out.println(Cuantos.getObject("count(nombre)"));
+                                _cuantos = Integer.parseInt((Cuantos.getObject("count(nombre)").toString()));
+//seleccionar alumnos pertenencientes al grupo seleccionado con el combo
+                                String query2 = "select nombre, apellido, alumno_id FROM alumno where idGrupo= '"+combo+"';";
+                                stament = conexion.createStatement();
+                                rs = stament.executeQuery(query2);
+                                if (rs.next()) {
+
+                                    NuC = new JLabel[_cuantos];
+
+                                    Nuc = new JCheckBox[_cuantos];
+                                    for (int i = 0; i < _cuantos; i++) {
+
+                                        Nuc[i] = new JCheckBox();
+                                        Nuc[i].setBounds(120, (155 + (i * 40)), 17, 17);
+                                        Fondo.add(Nuc[i]);
+
+                                        NuC[i] = new JLabel();
+                                        NuC[i].setText(rs.getObject("nombre").toString() + " " + rs.getObject("apellido").toString());
+                                        System.out.println(Integer.toString(rs.getInt("alumno_id")));
+                                        NuC[i].setName(Integer.toString(rs.getInt("alumno_id")));
+                                        NuC[i].setFont(new java.awt.Font("Century Gothic", 0, 20));
+                                        NuC[i].setBounds(150, (150 + (i * 40)), 200, 40);
+                                        Fondo.add(NuC[i]);
+                                        rs.next();
+
+                                    }
+                                }
+                            } else {
+                                JOptionPane.showMessageDialog(null, "No se encontraron registros");
+                                return;
+                            }
+                        } catch (SQLException ex) {
+                            ex.printStackTrace();
+                        }
+                        
+                        
+                    }
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
         }
 
     }
 
 }
-
